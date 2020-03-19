@@ -145,4 +145,40 @@
     return [self toHex:data];
 }
 
++ (NSString *) encrypt: (NSString *)text secret: (NSString *)secret {
+    return [self encrypt:text key:[self getKey:secret] iv:nil];
+}
+
++ (NSString *) decrypt: (NSString *)encryptedMessage secret: (NSString *)secret {
+    return [self decrypt:encryptedMessage key:[self getKey:secret] iv:nil];
+}
+
++ (NSString *) getKey: (NSString *)secret {
+    NSString *key = [self sha1:secret];
+    
+    //convert hex string to hex data
+    NSData *keyData = [self fromHex:key];
+    //    NSData *keyData = [key dataUsingEncoding:NSUTF8StringEncoding];
+    size_t numBytes = 0;
+
+    NSMutableData * buffer = [[NSMutableData alloc] initWithLength:[keyData length] + kCCBlockSizeAES128];
+
+    CCCryptorStatus cryptStatus = CCCrypt(kCCEncrypt,
+                                          kCCAlgorithmAES128,
+                                          kCCOptionPKCS7Padding,
+                                          keyData.bytes, kCCKeySizeAES256,
+                                          nil,
+                                          keyData.bytes, keyData.length,
+                                          buffer.mutableBytes,  buffer.length,
+                                          &numBytes);
+
+    if (cryptStatus == kCCSuccess) {
+        [buffer setLength:numBytes];
+        return [[NSString alloc] initWithData:buffer encoding:NSUTF8StringEncoding];
+    }
+    NSLog(@"AES error, %d", cryptStatus);
+    
+    return nil;
+}
+
 @end

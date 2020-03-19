@@ -55,6 +55,34 @@ public class RCTAes extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public static byte[] encrypt(String text, String secret) throws GeneralSecurityException {
+        Key secretKey = getKey(secret);
+        Cipher cipher = getCipher();
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        return cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
+    }
+
+    @ReactMethod
+    public static byte[] decrypt(byte[] encryptedMessage, String secret) throws GeneralSecurityException {
+        Key secretKey = getKey(secret);
+        Cipher cipher = getCipher();
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+        return cipher.doFinal(encryptedMessage);
+    }
+
+    private static Key getKey(String secret) throws NoSuchAlgorithmException {
+        byte[] key = secret.getBytes(StandardCharsets.UTF_8);
+        MessageDigest sha = MessageDigest.getInstance("SHA-1");
+        key = sha.digest(key);
+        key = Arrays.copyOf(key, 16);
+        return new SecretKeySpec(key, "AES");
+    }
+
+    private static Cipher getCipher() throws NoSuchPaddingException, NoSuchAlgorithmException {
+        return Cipher.getInstance("AES/ECB/PKCS5Padding");
+    }
+
+    @ReactMethod
     public void encrypt(String data, String key, String iv, Promise promise) {
         try {
             String result = encrypt(data, key, iv);

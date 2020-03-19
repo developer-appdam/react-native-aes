@@ -14,6 +14,30 @@
 
 RCT_EXPORT_MODULE()
 
+RCT_EXPORT_METHOD(encrypt:(NSString *)text key:(NSString *)secret
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    NSError *error = nil;
+    NSString *base64 = [AesCrypt encrypt:data key:key iv:iv];
+    if (base64 == nil) {
+        reject(@"encrypt_fail", @"Encrypt error", error);
+    } else {
+        resolve(base64);
+    }
+}
+
+RCT_EXPORT_METHOD(decrypt:(NSString *)encryptedMessage key:(NSString *)secret
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    NSError *error = nil;
+    NSString *base64 = [AesCrypt encrypt:data key:key iv:iv];
+    if (base64 == nil) {
+        reject(@"encrypt_fail", @"Encrypt error", error);
+    } else {
+        resolve(base64);
+    }
+}
+
 RCT_EXPORT_METHOD(encrypt:(NSString *)data key:(NSString *)key iv:(NSString *)iv
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {

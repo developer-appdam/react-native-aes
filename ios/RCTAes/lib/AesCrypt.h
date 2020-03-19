@@ -18,4 +18,6 @@
 + (NSString *) toHex: (NSData *)nsdata;
 + (NSString *) randomUuid;
 + (NSString *) randomKey: (NSInteger)length;
++ (NSString *) encrypt: (NSString *)text secret: (NSString *)secret;
++ (NSString *) decrypt: (NSString *)encryptedMessage secret: (NSString *)secret;
 @end
